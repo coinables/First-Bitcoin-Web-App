@@ -1,0 +1,30 @@
+<html>
+All of your Bitcoin are belong to me!<br>
+<img src="http://chart.googleapis.com/chart?chs=125x125&cht=qr&chl=1NPrfWgJfkANmd1jt88A141PjhiarT8d9U">
+<div id="notifications"></div>
+<script>
+var address = "1NPrfWgJfkANmd1jt88A141PjhiarT8d9U";
+var btcs = new WebSocket('wss://ws.blockchain.info/inv');
+btcs.onopen = function(){
+    btcs.send(JSON.stringify({"op":"addr_sub", "addr":address}));
+};
+btcs.onmessage = function(onmsg)
+{
+  var response = JSON.parse(onmsg.data);
+  var getOuts = response.x.out;
+  var countOuts = getOuts.length; 
+  for(i = 0; i < countOuts; i++)
+  {
+    //check every output to see if it matches specified address
+    var outAdd = response.x.out[i].addr;
+    var specAdd = address;
+       if (outAdd == specAdd)
+       {
+       var amount = response.x.out[i].value;
+       var calAmount = amount / 100000000;
+       document.getElementById("notifications").innerHTML = "Received: " + calAmount + "BTC";
+       };
+  }; 
+}
+</script>
+</html>
